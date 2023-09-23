@@ -3,6 +3,9 @@ The Scheduler tool is useful for assigning schedules to employees based on their
 availability, qualifications, and time slot offerings. An example of the Excel 
 input is the "examples" directory.
 
+> **Note 1:** This application is still undergoing a considerate amount of
+ development. 
+
 ## Requirements
 ### For Running
 - Windows 7+
@@ -16,3 +19,4 @@ input is the "examples" directory.
 ## TODO List
 - [ ] Add UI for displaying credits
 - [ ] Add functionality for generating multiple schedules
+- [ ] Display assignments in main TableView for quick viewing
