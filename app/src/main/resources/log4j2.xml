@@ -1,0 +1,19 @@
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" status="WARN">
+    <CustomLevels>
+        <CustomLevel name="ASSIGN" intLevel="310"/>
+    </CustomLevels>
+    <Appenders>
+    	<!-- Console appender configuration -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
+        </Console>
+        <TextStackAppender name="TextStackAppender">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n" />
+        </TextStackAppender>
+    </Appenders>
+    <Loggers>
+        <Root level="info" additivity="false">
+            <AppenderRef ref="TextStackAppender" />
+        </Root>
+    </Loggers>
+</Configuration>
