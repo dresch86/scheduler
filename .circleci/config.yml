@@ -39,7 +39,7 @@ jobs:
       - checkout
       - run: java --version
       - run: wget -O /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_linux-x64_bin-jmods.zip
-      - run: apt-get install unzip
+      - run: sudo apt-get install unzip -y
       - run: mkdir -p /opt/java
       - run: unzip /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip -d /opt/java
       - run: export PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1
