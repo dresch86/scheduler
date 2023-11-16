@@ -43,7 +43,7 @@ jobs:
       - run: sudo mkdir -p /opt/java
       - run: sudo unzip /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip -d /opt/java
       - run: export PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1
-      - run: sudo ./gradlew clean packageScheduler
+      - run: sudo ls -la && sudo gradlew clean packageScheduler
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
