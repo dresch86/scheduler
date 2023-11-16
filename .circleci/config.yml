@@ -14,6 +14,9 @@ jobs:
       name: win/default
       shell: powershell.exe
     steps:
+      - add_ssh_keys:
+        fingerprints:
+          - "8e:d0:69:e0:93:9f:9c:90:91:3c:b5:6c:42:c0:0d:4e"
       - checkout
       - run: Invoke-WebRequest https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_windows_hotspot_21.0.1_12.msi -OutFile C:\Temp\openjdk21.msi
       - run: New-Item 'C:\Java' -ItemType Directory -ea 0
@@ -34,15 +37,15 @@ jobs:
       - checkout
   linux-build:
     docker:
-      - image: cimg/openjdk:21.0.0
+      - image: cimg/openjdk:20.0.2
     steps:
       - checkout
       - run: java --version
-      - run: wget -O /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_linux-x64_bin-jmods.zip
+      - run: wget -O /tmp/openjfx-20.0.2_linux-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/20.0.2/openjfx-20.0.2_linux-x64_bin-jmods.zip
       - run: sudo apt-get install unzip -y
       - run: sudo mkdir -p /opt/java
-      - run: sudo unzip /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip -d /opt/java
-      - run: export PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1
+      - run: sudo unzip /tmp/openjfx-20.0.2_linux-x64_bin-jmods.zip -d /opt/java
+      - run: export PATH_TO_FX_MODS=/opt/java/javafx-jmods-20.0.2
       - run: sudo chmod +x ./gradlew
       - run: sudo ls -la && sudo ./gradlew clean packageScheduler
 
