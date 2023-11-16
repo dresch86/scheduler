@@ -23,8 +23,5 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SchedulerApplicationTest {
-    @Test void appHasAGreeting() {
-        SchedulerApplication classUnderTest = new SchedulerApplication();
-        //assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
-    }
+
 }

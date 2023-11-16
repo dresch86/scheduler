@@ -12,6 +12,8 @@ plugins {
 
     // JavaFX
     id "org.openjfx.javafxplugin" version "0.0.14"
+
+    id 'io.github.fvarrui.javapackager.plugin' version "1.7.5"
 }
 
 repositories {
@@ -39,21 +41,58 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation 'org.apache.commons:commons-lang3:3.13.0'
 
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-base
+    implementation 'org.openjfx:javafx-base:20.0.2'
+
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-graphics
+    implementation 'org.openjfx:javafx-graphics:20.0.2'
+
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-fxml
+    implementation 'org.openjfx:javafx-fxml:20.0.2'
+
+    // https://mvnrepository.com/artifact/org.openjfx/javafx-controls
+    implementation 'org.openjfx:javafx-controls:20.0.2'
+
     // https://mvnrepository.com/artifact/commons-io/commons-io
     implementation 'commons-io:commons-io:2.13.0'
 }
 
 javafx {
-    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
+    version = '20.0.2'
+    modules = ['javafx.base', 'javafx.controls', 'javafx.graphics', 'javafx.fxml']
 }
-
 
 application {
     // Define the main class for the application.
-    mainClass = 'org.ose.scheduler.SchedulerApplication'
+    mainClass = 'org.ose.scheduler.SchedulerLauncher'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.ose.scheduler.SchedulerLauncher'
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+task packageScheduler(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: build) {
+    // mandatory
+    mainClass = 'org.ose.scheduler.SchedulerLauncher'
+
+    additionalModulePaths = [file("$System.env.PATH_TO_FX_MODS")]
+    modules = ['javafx.base', 'javafx.controls', 'javafx.graphics', 'javafx.fxml']
+
+    // optional
+    bundleJre = true
+    generateInstaller = true
+    administratorRequired = false
 }

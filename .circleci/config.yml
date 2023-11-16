@@ -2,25 +2,53 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+orbs:
+  win: circleci/windows@5.0.0
+  macos: circleci/macos@2.4.0
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/configuration-reference/#executor-job
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/configuration-reference/#steps
+  win-build:
+    executor:
+      name: win/default
+      shell: powershell.exe
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+      - run: Invoke-WebRequest https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_windows_hotspot_21.0.1_12.msi -OutFile C:\Temp\openjdk21.msi
+      - run: New-Item 'C:\Java' -ItemType Directory -ea 0
+      - run: Start-Process -Wait -FilePath msiexec -ArgumentList /i, "C:\Temp\openjdk21.msi", "ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJarFileRunWith,FeatureJavaHome", 'INSTALLDIR="C:\Java"', /quiet -Verb RunAs
+      - run: Invoke-WebRequest https://services.gradle.org/distributions/gradle-8.4-bin.zip -OutFile C:\Temp\gradle-8.4-bin.zip
+      - run: New-Item 'C:\Gradle' -ItemType Directory -ea 0
+      - run: Expand-Archive -Path C:\Temp\gradle-8.4-bin.zip -DestinationPath 'C:\Gradle'
+      - run: Invoke-WebRequest https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_windows-x64_bin-jmods.zip -OutFile C:\Temp\openjfx-21.0.1_windows-x64_bin-jmods.zip
+      - run: New-Item 'C:\Java\jfx-21.0.1-jmods' -ItemType Directory -ea 0
+      - run: Expand-Archive -Path C:\Temp\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
+      - run: $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin'
+      - run: $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'
+      - run: gradlew.bat clean packageScheduler
+  macos-build:
+    macos:
+      xcode: 15.0.1
+    steps:
+      - checkout
+  linux-build:
+    docker:
+      - image: cimg/openjdk:21.0.0
+    steps:
+      - checkout
+      - run: java --version
+      - run: wget -O /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_linux-x64_bin-jmods.zip
+      - run: apt-get install unzip
+      - run: mkdir -p /opt/java
+      - run: unzip /tmp/openjfx-21.0.1_linux-x64_bin-jmods.zip -d /opt/java
+      - run: export PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1
+      - run: ./gradlew clean packageScheduler
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build-workflow:
     jobs:
-      - say-hello
+      - win-build
+      - linux-build

@@ -20,3 +20,4 @@ input is the "examples" directory.
 - [ ] Add UI for displaying credits
 - [ ] Add functionality for generating multiple schedules
 - [ ] Display assignments in main TableView for quick viewing
+- [ ] Add Circle CI/CD for creating releases
