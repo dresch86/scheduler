@@ -14,19 +14,17 @@ jobs:
       name: win/default
       shell: powershell.exe
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "8e:d0:69:e0:93:9f:9c:90:91:3c:b5:6c:42:c0:0d:4e"
       - checkout
-      - run: Invoke-WebRequest https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_windows_hotspot_21.0.1_12.msi -OutFile C:\Temp\openjdk21.msi
+      - run: New-Item 'C:\Downloads' -ItemType Directory -ea 0
+      - run: Invoke-WebRequest https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_windows_hotspot_21.0.1_12.msi -OutFile C:\Downloads\openjdk21.msi
       - run: New-Item 'C:\Java' -ItemType Directory -ea 0
-      - run: Start-Process -Wait -FilePath msiexec -ArgumentList /i, "C:\Temp\openjdk21.msi", "ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJarFileRunWith,FeatureJavaHome", 'INSTALLDIR="C:\Java"', /quiet -Verb RunAs
-      - run: Invoke-WebRequest https://services.gradle.org/distributions/gradle-8.4-bin.zip -OutFile C:\Temp\gradle-8.4-bin.zip
+      - run: Start-Process -Wait -FilePath msiexec -ArgumentList /i, "C:\Downloads\openjdk21.msi", "ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJarFileRunWith,FeatureJavaHome", 'INSTALLDIR="C:\Java"', /quiet -Verb RunAs
+      - run: Invoke-WebRequest https://services.gradle.org/distributions/gradle-8.4-bin.zip -OutFile C:\Downloads\gradle-8.4-bin.zip
       - run: New-Item 'C:\Gradle' -ItemType Directory -ea 0
-      - run: Expand-Archive -Path C:\Temp\gradle-8.4-bin.zip -DestinationPath 'C:\Gradle'
-      - run: Invoke-WebRequest https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_windows-x64_bin-jmods.zip -OutFile C:\Temp\openjfx-21.0.1_windows-x64_bin-jmods.zip
+      - run: Expand-Archive -Path C:\Downloads\gradle-8.4-bin.zip -DestinationPath 'C:\Gradle'
+      - run: Invoke-WebRequest https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_windows-x64_bin-jmods.zip -OutFile C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip
       - run: New-Item 'C:\Java\jfx-21.0.1-jmods' -ItemType Directory -ea 0
-      - run: Expand-Archive -Path C:\Temp\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
+      - run: Expand-Archive -Path C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
       - run: $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin'
       - run: $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'
       - run: gradlew.bat clean packageScheduler
@@ -42,12 +40,10 @@ jobs:
       - checkout
       - run: java --version
       - run: wget -O /tmp/openjfx-20.0.2_linux-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/20.0.2/openjfx-20.0.2_linux-x64_bin-jmods.zip
-      - run: sudo apt-get install unzip -y
       - run: sudo mkdir -p /opt/java
       - run: sudo unzip /tmp/openjfx-20.0.2_linux-x64_bin-jmods.zip -d /opt/java
-      - run: export PATH_TO_FX_MODS=/opt/java/javafx-jmods-20.0.2
       - run: sudo chmod +x ./gradlew
-      - run: sudo ls -la && sudo ./gradlew clean packageScheduler
+      - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-20.0.2 ./gradlew clean packageScheduler
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
