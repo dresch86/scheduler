@@ -14,6 +14,9 @@ jobs:
       name: win/default
       shell: powershell.exe
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "8e:d0:69:e0:93:9f:9c:90:91:3c:b5:6c:42:c0:0d:4e"
       - checkout
       - run: New-Item 'C:\Downloads' -ItemType Directory -ea 0
       - run: Invoke-WebRequest https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_windows_hotspot_21.0.1_12.msi -OutFile C:\Downloads\openjdk21.msi
