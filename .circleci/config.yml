@@ -29,9 +29,9 @@ jobs:
       - run: New-Item 'C:\Java\jfx-21.0.1-jmods' -ItemType Directory -ea 0
       - run: Expand-Archive -Path C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
       - run: | 
-          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin' &&
-          $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1' &&
-          Write-Output $Env:Path &&
+          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin' &&`
+          $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1' &&`
+          Write-Output $Env:Path &&`
           gradle clean packageScheduler
   macos-build:
     macos:
