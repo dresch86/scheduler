@@ -31,6 +31,7 @@ jobs:
       - run: $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin'
       - run: $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'
       - run: $Env:Path = ([System.Environment]::GetEnvironmentVariable("Path","Machine"), [System.Environment]::GetEnvironmentVariable("Path","User")) -match '.' -join ';'
+      - run: Write-Output $Env:Path
       - run: gradle clean packageScheduler
   macos-build:
     macos:
@@ -38,9 +39,11 @@ jobs:
     steps:
       - checkout
       - run: brew tap bell-sw/liberica
-      - run: brew install --cask liberica-jre21-full
+      - run: brew install --cask liberica-jdk21-lite
       - run: brew install gradle
-      - run: gradle clean packageScheduler
+      - run: wget -O /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_osx-x64_bin-jmods.zip
+      - run: sudo mkdir -p /opt/java && sudo unzip /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip -d /opt/java
+      - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1 gradle clean packageScheduler
   linux-build:
     docker:
       - image: cimg/openjdk:20.0.2
