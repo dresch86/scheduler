@@ -28,11 +28,11 @@ jobs:
       - run: Invoke-WebRequest https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_windows-x64_bin-jmods.zip -OutFile C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip
       - run: New-Item 'C:\Java\jfx-21.0.1-jmods' -ItemType Directory -ea 0
       - run: Expand-Archive -Path C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
-      - run: $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin'
-      - run: $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'
-      - run: $Env:Path = ([System.Environment]::GetEnvironmentVariable("Path","Machine"), [System.Environment]::GetEnvironmentVariable("Path","User")) -match '.' -join ';'
-      - run: Write-Output $Env:Path
-      - run: gradle clean packageScheduler
+      - run: | 
+          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin' &&
+          $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1' &&
+          Write-Output $Env:Path &&
+          gradle clean packageScheduler
   macos-build:
     macos:
       xcode: 15.0.1
