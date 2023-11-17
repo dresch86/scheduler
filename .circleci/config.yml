@@ -30,7 +30,7 @@ jobs:
       - run: Expand-Archive -Path C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
       - run: $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin'
       - run: $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'
-      - run: Start-Process -FilePath gradlew.bat -ArgumentList clean packageScheduler -Wait
+      - run: Start-Process -FilePath gradlew.bat -ArgumentList "clean", "packageScheduler" -Wait
   macos-build:
     macos:
       xcode: 15.0.1
