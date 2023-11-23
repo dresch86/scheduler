@@ -17,9 +17,6 @@ aliases:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  gh/release:
-    tag: << pipeline.git.tag >>
-    notes-file: CHANGELOG.md
   win-build:
     executor:
       name: win/default
@@ -86,7 +83,9 @@ jobs:
 workflows:
   multiplatform:
     jobs:
-      - gh/release
+      - gh/release:
+          tag: << pipeline.git.tag >>
+          notes-file: CHANGELOG.md
           filters: *tags_only
       - win-build:
           requires:
