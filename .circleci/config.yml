@@ -21,8 +21,8 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - gh/setup
-      - gh/clone
+      - checkout
+      - gh/install
       - run:
           command: |
             gh release create $CIRCLE_TAG -F $GH_NOTES_FILE
