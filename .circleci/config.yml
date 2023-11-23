@@ -41,7 +41,7 @@ jobs:
           $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1' -and `
           gradle clean packageScheduler
       - run: |
-          gh auth login --with-token <<< $GITHUB_TOKEN &&
+          gh auth login --with-token \<<< $GITHUB_TOKEN && `
           gh release create $CIRCLE_TAG ./app/build/*.exe
   macos-build:
     macos:
@@ -56,7 +56,7 @@ jobs:
       - run: sudo mkdir -p /opt/java && sudo unzip /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip -d /opt/java
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1 gradle clean packageScheduler
       - run: |
-          gh auth login --with-token <<< $GITHUB_TOKEN &&
+          gh auth login --with-token \<<< $GITHUB_TOKEN && `
           gh release create $CIRCLE_TAG ./app/build/*.dmg
   linux-build:
     docker:
@@ -70,28 +70,28 @@ jobs:
       - run: sudo chmod +x ./gradlew
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-20.0.2 ./gradlew clean packageScheduler
       - run: | 
-          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-          && sudo apt update \
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y) `
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \ `
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \ `
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \ `
+          && sudo apt update \ `
           && sudo apt install gh -y
       - run: |
-        gh auth login --with-token <<< $GITHUB_TOKEN &&
-        gh release create $CIRCLE_TAG ./app/build/*.deb
+          gh auth login --with-token \<<< $GITHUB_TOKEN && `
+          gh release create $CIRCLE_TAG ./app/build/*.deb
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
   win-workflow:
     jobs:
-      - win-build
+      - win-build:
           filters: *tags_only
   macos-workflow:
     jobs:
-      - macos-build
+      - macos-build:
           filters: *tags_only
   linux-workflow:
     jobs:
-      - linux-build
+      - linux-build:
           filters: *tags_only
