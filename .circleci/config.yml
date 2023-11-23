@@ -6,6 +6,13 @@ orbs:
   win: circleci/windows@5.0.0
   macos: circleci/macos@2.4.0
 
+aliases:
+  - &tags_only
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^v\d+\.\d+\.\d+$/
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
@@ -62,7 +69,8 @@ jobs:
       - run: sudo unzip /tmp/openjfx-20.0.2_linux-x64_bin-jmods.zip -d /opt/java
       - run: sudo chmod +x ./gradlew
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-20.0.2 ./gradlew clean packageScheduler
-      - run: | type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+      - run: | 
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
           && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
           && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
@@ -78,24 +86,12 @@ workflows:
   win-workflow:
     jobs:
       - win-build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
+          filters: *tags_only
   macos-workflow:
     jobs:
       - macos-build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
+          filters: *tags_only
   linux-workflow:
     jobs:
       - linux-build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
+          filters: *tags_only
