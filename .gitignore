@@ -9,3 +9,6 @@ app/bin
 
 # Visual Studio Code settings
 .vscode
+
+# CircleCI workspace for multiplatform builds
+platforms

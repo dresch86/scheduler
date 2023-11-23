@@ -17,6 +17,17 @@ aliases:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
+  create-multi-release:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - gh/setup
+      - gh/clone
+      - run:
+          command: |
+            gh release create $CIRCLE_TAG -F $GH_NOTES_FILE
+          environment:
+            GH_NOTES_FILE: CHANGELOG.md
   win-build:
     executor:
       name: win/default
@@ -83,16 +94,14 @@ jobs:
 workflows:
   multiplatform:
     jobs:
-      - gh/release:
-          tag: << pipeline.git.tag >>
-          notes-file: CHANGELOG.md
+      - create-multi-release:
           filters: *tags_only
       - win-build:
           requires:
-            - gh/release
+            - create-multi-release
       - macos-build:
           requires:
-            - gh/release
+            - create-multi-release
       - linux-build:
           requires:
-            - gh/release
+            - create-multi-release
