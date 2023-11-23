@@ -9,3 +9,4 @@
 
 rootProject.name = 'scheduler'
 include('app')
+project(":app").name = "Scheduler"

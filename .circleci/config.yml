@@ -28,11 +28,14 @@ jobs:
       - run: Invoke-WebRequest https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_windows-x64_bin-jmods.zip -OutFile C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip
       - run: New-Item 'C:\Java\jfx-21.0.1-jmods' -ItemType Directory -ea 0
       - run: Expand-Archive -Path C:\Downloads\openjfx-21.0.1_windows-x64_bin-jmods.zip -DestinationPath 'C:\Java'
+      - run: choco install gh
       - run: | 
-          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin' &&`
-          $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1' &&`
-          Write-Output $Env:Path &&`
+          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin' -and `
+          $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1' -and `
           gradle clean packageScheduler
+      - run: |
+          gh auth login --with-token <<< $GITHUB_TOKEN &&
+          gh release create $CIRCLE_TAG ./app/build/*.exe
   macos-build:
     macos:
       xcode: 15.0.1
@@ -41,9 +44,13 @@ jobs:
       - run: brew tap bell-sw/liberica
       - run: brew install --cask liberica-jdk21-lite
       - run: brew install gradle
+      - run: brew install gh
       - run: wget -O /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip https://download2.gluonhq.com/openjfx/21.0.1/openjfx-21.0.1_osx-x64_bin-jmods.zip
       - run: sudo mkdir -p /opt/java && sudo unzip /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip -d /opt/java
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1 gradle clean packageScheduler
+      - run: |
+          gh auth login --with-token <<< $GITHUB_TOKEN &&
+          gh release create $CIRCLE_TAG ./app/build/*.dmg
   linux-build:
     docker:
       - image: cimg/openjdk:20.0.2
@@ -55,12 +62,40 @@ jobs:
       - run: sudo unzip /tmp/openjfx-20.0.2_linux-x64_bin-jmods.zip -d /opt/java
       - run: sudo chmod +x ./gradlew
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-20.0.2 ./gradlew clean packageScheduler
+      - run: | type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y
+      - run: |
+        gh auth login --with-token <<< $GITHUB_TOKEN &&
+        gh release create $CIRCLE_TAG ./app/build/*.deb
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  build-workflow:
+  win-workflow:
     jobs:
       - win-build
-      - linux-build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
+  macos-workflow:
+    jobs:
       - macos-build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
+  linux-workflow:
+    jobs:
+      - linux-build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
