@@ -5,6 +5,7 @@ version: 2.1
 orbs:
   win: circleci/windows@5.0.0
   macos: circleci/macos@2.4.0
+  gh: circleci/github-cli@2.2.0
 
 aliases:
   - &tags_only
@@ -16,6 +17,9 @@ aliases:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
+  gh/release:
+    tag: << pipeline.git.tag >>
+    notes-file: CHANGELOG.md
   win-build:
     executor:
       name: win/default
@@ -41,7 +45,7 @@ jobs:
             $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'; `
             gradle clean packageScheduler
       - run: |
-          gh release create $Env:CIRCLE_TAG ./app/build/*.exe -F CHANGELOG.md
+          gh release upload $Env:CIRCLE_TAG ./app/build/*.exe --clobber
   macos-build:
     macos:
       xcode: 15.0.1
@@ -55,7 +59,7 @@ jobs:
       - run: sudo mkdir -p /opt/java && sudo unzip /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip -d /opt/java
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1 gradle clean packageScheduler
       - run: |
-          gh release create $CIRCLE_TAG ./app/build/*.pkg -F CHANGELOG.md
+          gh release upload $CIRCLE_TAG ./app/build/*.pkg --clobber
   linux-build:
     docker:
       - image: cimg/openjdk:20.0.2
@@ -75,20 +79,21 @@ jobs:
             && sudo apt update \
             && sudo apt install gh -y
       - run: |
-          gh release create $CIRCLE_TAG ./app/build/*.deb -F CHANGELOG.md
+          gh release upload $CIRCLE_TAG ./app/build/*.deb --clobber
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  win-workflow:
+  multiplatform:
     jobs:
+      - gh/release
+          filters: *tags_only
       - win-build:
-          filters: *tags_only
-  macos-workflow:
-    jobs:
+          requires:
+            - gh/release
       - macos-build:
-          filters: *tags_only
-  linux-workflow:
-    jobs:
+          requires:
+            - gh/release
       - linux-build:
-          filters: *tags_only
+          requires:
+            - gh/release
