@@ -41,7 +41,7 @@ jobs:
             $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'; `
             gradle clean packageScheduler
       - run: |
-          gh auth login -p https -h github.com && gh release create $Env:CIRCLE_TAG ./app/build/*.exe
+          gh release create $Env:CIRCLE_TAG ./app/build/*.exe
   macos-build:
     macos:
       xcode: 15.0.1
@@ -55,7 +55,7 @@ jobs:
       - run: sudo mkdir -p /opt/java && sudo unzip /tmp/openjfx-21.0.1_osx-x64_bin-jmods.zip -d /opt/java
       - run: sudo PATH_TO_FX_MODS=/opt/java/javafx-jmods-21.0.1 gradle clean packageScheduler
       - run: |
-          gh auth login -p https -h github.com && gh release create $CIRCLE_TAG ./app/build/*.dmg
+          gh release create $CIRCLE_TAG ./app/build/*.dmg
   linux-build:
     docker:
       - image: cimg/openjdk:20.0.2
@@ -75,7 +75,7 @@ jobs:
             && sudo apt update \
             && sudo apt install gh -y
       - run: |
-          gh auth login -p https -h github.com && gh release create $CIRCLE_TAG ./app/build/*.deb
+          gh release create $CIRCLE_TAG ./app/build/*.deb
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
