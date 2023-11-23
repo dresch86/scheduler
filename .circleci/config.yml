@@ -42,7 +42,7 @@ jobs:
           gradle clean packageScheduler
       - run: |
           gh auth login --with-token \<<< $GITHUB_TOKEN && `
-          gh release create $CIRCLE_TAG ./app/build/*.exe
+          gh release create $Env:CIRCLE_TAG ./app/build/*.exe
   macos-build:
     macos:
       xcode: 15.0.1
