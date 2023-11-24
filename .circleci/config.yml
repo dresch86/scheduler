@@ -51,9 +51,15 @@ jobs:
       - run: New-Item 'C:\WiX' -ItemType Directory -ea 0
       - run: Expand-Archive -Path C:\Downloads\wix311-binaries.zip -DestinationPath 'C:\WiX'
       - run: choco install -y gh
-      - run: | 
-          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin;' + 'C:\WiX'; `
-            $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'; `
+#      - run: | 
+#          $Env:Path = $Env:Path + ';' + 'C:\Java\bin;' + 'C:\Gradle\gradle-8.4\bin;' + 'C:\WiX'; `
+#            $Env:PATH_TO_FX_MODS = 'C:\Java\javafx-jmods-21.0.1'; `
+#            gradle clean packageScheduler
+      - run:
+        shell: command.exe
+        command: |
+          set PATH=%PATH%;C:\Java\bin;C:\Gradle\gradle-8.4\bin;C:\WiX &&
+            set PATH_TO_FX_MODS=C:\Java\javafx-jmods-21.0.1 && 
             gradle clean packageScheduler
       - run: |
           gh release upload $Env:CIRCLE_TAG ./app/build/*.exe --clobber
