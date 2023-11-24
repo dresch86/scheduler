@@ -50,7 +50,7 @@ jobs:
       - run: Invoke-WebRequest https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip -OutFile C:\Downloads\wix311-binaries.zip
       - run: New-Item 'C:\WiX' -ItemType Directory -ea 0
       - run: Expand-Archive -Path C:\Downloads\wix311-binaries.zip -DestinationPath 'C:\WiX'
-      - run: choco install -y gh
+      - run: choco install -y gh -and Update-SessionEnvironment
       - run:
           shell: cmd.exe
           command: set PATH=%PATH%;C:\Java\bin;C:\Gradle\gradle-8.4\bin;C:\WiX & set PATH_TO_FX_MODS=C:\Java\javafx-jmods-21.0.1 & gradle clean packageScheduler
