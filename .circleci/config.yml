@@ -53,10 +53,7 @@ jobs:
       - run: choco install -y gh
       - run:
           shell: cmd.exe
-          command: |
-            set PATH=%PATH%;C:\Java\bin;C:\Gradle\gradle-8.4\bin;C:\WiX && 
-              set PATH_TO_FX_MODS=C:\Java\javafx-jmods-21.0.1 && 
-              gradle clean packageScheduler
+          command: set PATH=%PATH%;C:\Java\bin;C:\Gradle\gradle-8.4\bin;C:\WiX & set PATH_TO_FX_MODS=C:\Java\javafx-jmods-21.0.1 & gradle clean packageScheduler
       - run: |
           gh release upload $Env:CIRCLE_TAG ./app/build/*.exe --clobber
   macos-build:
