@@ -57,7 +57,8 @@ jobs:
       - run: |
           Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
             refreshenv; `
-            gh release upload $env:CIRCLE_TAG (get-item .\app\build\*.exe) --clobber
+            Write-Output "Uploading tag [$env:CIRCLE_TAG] to release..."; `
+            gh release upload "$env:CIRCLE_TAG" (get-item .\app\build\*.exe) --clobber
   macos-build:
     macos:
       xcode: 15.0.1
