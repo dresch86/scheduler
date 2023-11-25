@@ -55,9 +55,9 @@ jobs:
           shell: cmd.exe
           command: set PATH=%PATH%;C:\Java\bin;C:\Gradle\gradle-8.4\bin;C:\WiX & set PATH_TO_FX_MODS=C:\Java\javafx-jmods-21.0.1 & gradle clean packageScheduler
       - run: |
-          Import-Module $Env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
+          Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
             refreshenv; `
-            gh release upload $Env:CIRCLE_TAG ./app/build/*.exe --clobber
+            gh release upload $env:CIRCLE_TAG "app\build\*.exe" --clobber
   macos-build:
     macos:
       xcode: 15.0.1
