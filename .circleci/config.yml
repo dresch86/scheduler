@@ -29,6 +29,7 @@ jobs:
           environment:
             GH_NOTES_FILE: CHANGELOG.md
   win-build:
+    resource_class: windows.large
     executor:
       name: win/default
       shell: powershell.exe
